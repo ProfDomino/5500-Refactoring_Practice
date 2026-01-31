@@ -1,0 +1,11 @@
+Refactoring Analysis & Design Rationale
+
+The primary issue with the original code is the heavy use of deeply nested conditionals and string-based item checks, which makes the logic difficult to read and hard to extend without modifying existing behavior.
+
+To address this, I separated item data from item behavior by introducing an ItemUpdater abstraction using the Strategy pattern, allowing each item type to encapsulate its own update logic.
+
+This design improves readability, adheres to the Single Responsibility and Open/Closed principles, and makes it easy to add new item types without changing the core GildedRose class.
+
+A potential drawback is the increased number of classes, which adds some structural overhead.
+
+However, this tradeoff is acceptable given the improved maintainability, testability, and clarity of the system as it grows.
