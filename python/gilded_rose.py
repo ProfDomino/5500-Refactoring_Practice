@@ -1,46 +1,27 @@
 # -*- coding: utf-8 -*-
 
+from item import Item
+from strategy_factory import StrategyFactory
+
+
 class GildedRose(object):
+    """This is the main class for managing Gilded Rose inventory."""
 
     def __init__(self, items):
+        """This method is used to initialize the GildedRose with a list of items.
+        
+        Args:
+            items: List of Item objects to manage
+        """
         self.items = items
+        self.strategy_factory = StrategyFactory()
 
     def update_quality(self):
+        """This method is used to update the quality and sell_in for all items in the inventory.
+        
+        It uses the Strategy Pattern to delegate the update logic to
+        item-specific strategy classes.
+        """
         for item in self.items:
-            if item.name != "Aged Brie" and item.name != "Backstage passes to a TAFKAL80ETC concert":
-                if item.quality > 0:
-                    if item.name != "Sulfuras, Hand of Ragnaros":
-                        item.quality = item.quality - 1
-            else:
-                if item.quality < 50:
-                    item.quality = item.quality + 1
-                    if item.name == "Backstage passes to a TAFKAL80ETC concert":
-                        if item.sell_in < 11:
-                            if item.quality < 50:
-                                item.quality = item.quality + 1
-                        if item.sell_in < 6:
-                            if item.quality < 50:
-                                item.quality = item.quality + 1
-            if item.name != "Sulfuras, Hand of Ragnaros":
-                item.sell_in = item.sell_in - 1
-            if item.sell_in < 0:
-                if item.name != "Aged Brie":
-                    if item.name != "Backstage passes to a TAFKAL80ETC concert":
-                        if item.quality > 0:
-                            if item.name != "Sulfuras, Hand of Ragnaros":
-                                item.quality = item.quality - 1
-                    else:
-                        item.quality = item.quality - item.quality
-                else:
-                    if item.quality < 50:
-                        item.quality = item.quality + 1
-
-
-class Item:
-    def __init__(self, name, sell_in, quality):
-        self.name = name
-        self.sell_in = sell_in
-        self.quality = quality
-
-    def __repr__(self):
-        return "%s, %s, %s" % (self.name, self.sell_in, self.quality)
+            strategy = self.strategy_factory.create_strategy(item)
+            strategy.update(item)
