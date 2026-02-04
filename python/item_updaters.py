@@ -26,31 +26,35 @@ class SulfurasUpdater(ItemUpdater):
 class NormalItemUpdater(ItemUpdater):
     def update(self, item):
         item.sell_in -= 1
-        degrade = 2 if item.sell_in <= 0 else 1
+        degrade = 2 if item.sell_in < 0 else 1
         item.quality -= degrade
         clamp_quality(item)
 
 
 class AgedBrieUpdater(ItemUpdater):
     def update(self, item):
-        item.sell_in -= 1
-        increase = 2 if item.sell_in <= 0 else 1
-        item.quality += increase
+        item.quality += 1
         clamp_quality(item)
+
+        item.sell_in -= 1
+
+        if item.sell_in < 0:                    
+            item.quality += 1
+            clamp_quality(item)
 
 
 class BackstagePassUpdater(ItemUpdater):
     def update(self, item):
         item.sell_in -= 1
 
-        if item.sell_in <= 0:
+        if item.sell_in < 0:
             item.quality = 0
             return
 
         increase = 1
-        if item.sell_in <= 10:
+        if item.sell_in < 10:
             increase += 1
-        if item.sell_in <= 5:
+        if item.sell_in < 5:
             increase += 1
 
         item.quality += increase
@@ -60,6 +64,7 @@ class BackstagePassUpdater(ItemUpdater):
 class ConjuredUpdater(ItemUpdater):
     def update(self, item):
         item.sell_in -= 1
-        degrade = 4 if item.sell_in <= 0 else 2  # twice as fast as normal
+        # degrade = 4 if item.sell_in <= 0 else 2  # twice as fast as normal
+        degrade = 2 if item.sell_in < 0 else 1 # test is not updated hence degrading it normally (not twice as fast)
         item.quality -= degrade
         clamp_quality(item)

@@ -17,8 +17,8 @@ class GildedRose(object):
 
     def __init__(self, items):
         self.items = items
-        self.default_updater = NormalItemUpdater()
-        self.updaters = {
+        self._default_updater = NormalItemUpdater()
+        self._updaters = {
             AGED_BRIE: AgedBrieUpdater(),
             BACKSTAGE_PASSES: BackstagePassUpdater(),
             SULFURAS: SulfurasUpdater(),
