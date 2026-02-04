@@ -1,3 +1,19 @@
+
+# Quality is never negative and never exceeds QUALITY_MAX (except Sulfuras).
+QUALITY_MIN = 0
+QUALITY_MAX = 50
+QUALITY_DIF = 1
+
+# Backstage passes gain value as the event approaches, then drop to 0 after.
+BACKSTAGE_DOUBLE_THRESHOLD = 11
+BACKSTAGE_TRIPLE_THRESHOLD = 6
+
+# Remove hardcoded values
+AGED_BRIE = "Aged Brie"
+BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert"
+SULFURAS = "Sulfuras, Hand of Ragnaros"
+
+
 class GildedRose(object):
 
     def __init__(self, items):
@@ -13,11 +29,11 @@ class GildedRose(object):
             updater.update(item)
 
 def limit_quality(item):
-    if item.quality < 0:
-        item.quality = 0
+    if item.quality < QUALITY_MIN:
+        item.quality = QUALITY_MIN
 
-    if item.quality > 50:
-        item.quality = 50
+    if item.quality > QUALITY_MAX:
+        item.quality = QUALITY_MAX
 
 
 class ItemUpdater:
@@ -34,12 +50,10 @@ class ItemUpdater:
         self.limit(item)
 
     def update_quality_before_sell_date(self, item):
-        if item.quality > 0:
-            item.quality -= 1
+        self.decrease_quality(item)
 
     def update_quality_after_sell_date(self, item):
-        if item.quality > 0:
-            item.quality -= 1
+        self.decrease_quality(item)
 
     def decrease_days_left(self, item):
         item.days_left -= 1
@@ -47,28 +61,34 @@ class ItemUpdater:
     def limit(self, item):
         limit_quality(item)
 
+    def increase_quality(self, item, amount=QUALITY_DIF):
+        item.quality += amount
+
+    def decrease_quality(self, item, amount=QUALITY_DIF):
+        if item.quality > QUALITY_MIN:
+            item.quality -= amount
 
 
 # UPDATERS
 class AgedBrieUpdater(ItemUpdater):
     # Aged Brie: quality increases as it ages; after sell date, increases faster
     def update_quality_before_sell_date(self, item):
-        item.quality += 1
+        self.increase_quality(item)
 
     def update_quality_after_sell_date(self, item):
-        item.quality += 1
+        self.increase_quality(item)
 
 
 class BackstagePassUpdater(ItemUpdater):
     # Backstage passes: quality increases as it approaches; after concert, quality is 0
     def update_quality_before_sell_date(self, item):
-        item.quality += 1
+        self.increase_quality(item)
 
-        if item.days_left < 11:
-            item.quality += 1
+        if item.days_left < BACKSTAGE_DOUBLE_THRESHOLD:
+            self.increase_quality(item)
 
-        if item.days_left < 6:
-            item.quality += 1
+        if item.days_left < BACKSTAGE_TRIPLE_THRESHOLD:
+            self.increase_quality(item)
 
     def update_quality_after_sell_date(self, item):
         item.quality = 0
@@ -92,9 +112,9 @@ class ItemUpdaterFactory:
     def __init__(self):
         # Create and reuse updater instances (no need to recreate them each time)
         self._updaters_by_name = {
-            "Aged Brie": AgedBrieUpdater(),
-            "Backstage passes to a TAFKAL80ETC concert": BackstagePassUpdater(),
-            "Sulfuras, Hand of Ragnaros": SulfurasUpdater(),
+            AGED_BRIE: AgedBrieUpdater(),
+            BACKSTAGE_PASSES: BackstagePassUpdater(),
+            SULFURAS: SulfurasUpdater(),
         }
 
         # Default updater for any item name not in the dictionary
