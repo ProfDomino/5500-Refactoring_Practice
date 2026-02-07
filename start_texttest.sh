@@ -1,3 +1,4 @@
+python3 -m venv venv
 #!/bin/sh
 
 if [ ! -d "venv" ]; then
