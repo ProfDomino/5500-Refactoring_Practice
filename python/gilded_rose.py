@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Gilded Rose Refactoring - Strategy Pattern Implementation
-Author: Pooja Narasimha Murthy
+Author: Pooja Malakappa Nuchchi
 """
 
 from abc import ABC, abstractmethod
