@@ -24,7 +24,7 @@ diff_program:meld
 
 # Settings for the Java version using Gradle wrapped in a python script
 executable:${TEXTTEST_HOME}/Java/texttest_rig.py
-interpreter:python
+interpreter:python3
 
 # Settings for the Java version using the classpath
 #executable:com.gildedrose.TexttestFixture
