@@ -20,7 +20,7 @@ test {
     useJUnitPlatform()
 }
 
-task text(type: JavaExec) {
+tasks.register("text", JavaExec) {
     mainClass = "com.gildedrose.TexttestFixture"
     classpath = sourceSets.test.runtimeClasspath
     if (project.hasProperty("args")) {
