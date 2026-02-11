@@ -1,0 +1,66 @@
+Gilded Rose Refactoring - My Analysis
+
+PROBLEMS I FOUND:
+
+The original code was honestly a mess. There were like 6 levels of nested if statements 
+in some places which made it super confusing to follow. Every time I tried to trace 
+through what happens to an item, I'd get lost in all the conditions.
+
+The biggest issue was you literally cant add a new item type without going into that 
+huge update_quality method and adding more if statements. That just makes the problem 
+worse.
+
+Also the quality checking (making sure its between 0-50) was copy-pasted all over the 
+place. If we needed to change how that works, we'd have to find every single spot.
+
+Everything was crammed into one massive method. It was doing way too much - checking 
+item names, updating quality, handling special cases, everything. Really hard to test 
+specific behaviors when its all tangled together like that.
+
+The string comparisons like if item.name == "Aged Brie" everywhere felt really fragile 
+too. One typo and things break.
+
+
+MY SOLUTION:
+
+I used the Strategy Pattern from that refactoring.guru site. Basically each item type 
+gets its own class that knows how to update itself. So NormalItemStrategy handles 
+regular items, AgedBrieStrategy handles aged brie, etc.
+
+Then I added a StrategyFactory that just looks at the item name and picks which 
+strategy to use. Pretty straightforward.
+
+Now the main update_quality method is like 4 lines - just loop through items, get the 
+right strategy, call update. Way cleaner.
+
+
+WHY IT WORKS:
+
+Each strategy class has one job - update one type of item. So the code is way more 
+organized and easier to understand.
+
+If we need to add a new item type (like the Conjured items), I just make a new 
+strategy class. Dont have to touch any existing code. Thats the Open/Closed Principle 
+or whatever its called.
+
+Testing is actually possible now. I can test just the NormalItemStrategy without 
+worrying about all the other item types.
+
+No more crazy nested ifs. Each strategy is like 10 lines of simple code.
+
+
+DOWNSIDES:
+
+Theres definitely more files now. Instead of one class we have like 7 or 8. For a 
+small project that might feel like overkill but I think its worth it for maintainability.
+
+The code creates a new strategy object every time it updates an item. If we had 
+thousands of items that could be slow. We could probably cache the strategy objects 
+but I didnt do that here.
+
+The factory still uses string matching to figure out which strategy to use. It works 
+but its not super elegant. Could maybe use enums or something but the assignment said 
+not to modify the Item class so I left it.
+
+Overall though I think this is way better than what we started with. The code actually 
+makes sense now and we can extend it without breaking stuff.
