@@ -1,0 +1,76 @@
+@startuml GildedRose
+
+skinparam classAttributeIconSize 0
+
+class Item {
+  + name : String
+  + sellIn : int
+  + quality : int
+  + Item(name, sellIn, quality)
+  + toString() : String
+}
+
+class GildedRose {
+  - items : Item[]
+  + GildedRose(items)
+  + updateQuality()
+}
+
+interface ItemUpdateStrategy {
+  + update(item : Item)
+}
+
+class NormalItemStrategy {
+  + update(item : Item)
+}
+
+class AgedBrieStrategy {
+  + update(item : Item)
+}
+
+class SulfurasStrategy {
+  + update(item : Item)
+}
+
+class BackstagePassStrategy {
+  + update(item : Item)
+}
+
+class ConjuredItemStrategy {
+  + update(item : Item)
+}
+
+class ItemStrategyFactory {
+  + {static} forItem(item : Item) : ItemUpdateStrategy
+}
+
+class QualityRules {
+  + {static} MAX_QUALITY : int
+  + {static} SULFURAS_QUALITY : int
+  + {static} clampQuality(item, min, max)
+  + {static} clampNormalQuality(item)
+}
+
+GildedRose "1" *-- "many" Item : holds
+GildedRose ..> ItemStrategyFactory : uses
+GildedRose ..> ItemUpdateStrategy : calls update()
+
+ItemUpdateStrategy <|.. NormalItemStrategy
+ItemUpdateStrategy <|.. AgedBrieStrategy
+ItemUpdateStrategy <|.. SulfurasStrategy
+ItemUpdateStrategy <|.. BackstagePassStrategy
+ItemUpdateStrategy <|.. ConjuredItemStrategy
+
+ItemStrategyFactory ..> ItemUpdateStrategy : returns
+ItemStrategyFactory ..> Item : reads name
+
+NormalItemStrategy ..> Item : updates
+AgedBrieStrategy ..> Item : updates
+SulfurasStrategy ..> Item : reads
+BackstagePassStrategy ..> Item : updates
+ConjuredItemStrategy ..> Item : updates
+
+NormalItemStrategy ..> QualityRules : optional
+AgedBrieStrategy ..> QualityRules : optional
+
+@enduml
